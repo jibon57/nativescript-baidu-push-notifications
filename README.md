@@ -36,8 +36,9 @@ import * as pushPlugin from "nativescript-baidu-push-notifications";
 
 JavaScript:
 
+```javascript
 pushPlugin = require("nativescript-baidu-push-notifications");
-
+```
 
 **Android**
 
