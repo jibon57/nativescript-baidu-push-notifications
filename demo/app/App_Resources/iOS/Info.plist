@@ -44,7 +44,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>insBPushAPIKey</key>
-    <string>9Y4EFhgka353fZvPaKFtx0mg</string>
+    <string>My API Key</string>
     <key>isDevBPushEnvironment</key>
     <true/>
 </dict>

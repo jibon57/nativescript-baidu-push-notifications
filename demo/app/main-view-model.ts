@@ -21,7 +21,7 @@ export class HelloWorldModel extends Observable {
     public registerForAndroid() {
 
         let opt: AndroidOptions = {
-            apiKey: 'CMVgubVbH4vr6dqwvFZGv5l1'
+            apiKey: 'My API Key'
         }
 
         pushPlugin.androidRegister(opt, function (Userid, channelId) {
