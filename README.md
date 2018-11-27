@@ -29,9 +29,10 @@ Your application ID is important here. Make sure that your Baidu API key & Appli
 
 TS/Angular:
 
+```javascript
 import { IosRegistrationOptions, AndroidOptions } from "nativescript-baidu-push-notifications";
 import * as pushPlugin from "nativescript-baidu-push-notifications";
-
+```
 
 JavaScript:
 
