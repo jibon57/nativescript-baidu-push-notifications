@@ -106,7 +106,7 @@ let _removeObserver = function (observer: () => void, eventName: string) {
     iosApp.removeNotificationObserver(observer, eventName);
 };
 
-export function iOSregister(settings: IosRegistrationOptions, success: (token: String) => void, error: (NSError: any) => void) {
+export function iosRegister(settings: IosRegistrationOptions, success: (token: String) => void, error: (NSError: any) => void) {
     _init(settings);
     if (!pushSettings.didRegisterObserver) { // make sure that the events are not attached more than once
         pushSettings.didRegisterObserver = _addObserver("didRegisterForRemoteNotificationsWithDeviceToken", (result: any) => {
@@ -169,7 +169,7 @@ export function registerUserNotificationSettings(success: () => void, error: (er
     }
 }
 
-export function unregister(done: (context: any) => void) {
+export function iosUnregister(done: (context: any) => void) {
     if (!pushSettings.didUnregisterObserver) {
         pushSettings.didUnregisterObserver = _addObserver("didUnregister", (context: any) => {
             _removeObserver(pushSettings.didUnregisterObserver, "didUnregister");

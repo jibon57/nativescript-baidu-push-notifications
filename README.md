@@ -1,18 +1,21 @@
-# Your Plugin Name
+[![npm](https://img.shields.io/npm/v/nativescript-baidu-push-notifications.svg)](https://www.npmjs.com/package/nativescript-baidu-push-notifications)
+[![npm](https://img.shields.io/npm/dt/nativescript-baidu-push-notifications.svg?label=npm%20downloads)](https://www.npmjs.com/package/nativescript-baidu-push-notifications)
 
-Add your plugin badges here. See [nativescript-urlhandler](https://github.com/hypery2k/nativescript-urlhandler) for example.
 
-Then describe what's the purpose of your plugin. 
+# Baidu push notifications plugin for NativeScript
 
-In case you develop UI plugin, this is where you can add some screenshots.
+Baidu is an alternative solution of Google FCM in China. This plugin will add Baidu push notification (http://push.baidu.com).
 
-## (Optional) Prerequisites / Requirements
+## Prerequisites / Requirements
 
-Describe the prerequisites that the user need to have installed before using your plugin. See [nativescript-firebase plugin](https://github.com/eddyverbruggen/nativescript-plugin-firebase) for example.
+For getting API key follow: http://push.baidu.com/doc/guide/join
+
+For iOS need to follow `第七章 iOS证书指导` from http://push.baidu.com/doc/ios/api to setup Baidu.
+
+**Note:** I am not an expert of neigher iOS nor Android. So, please contribute if you think something you can do better :)
+
 
 ## Installation
-
-Describe your plugin installation steps. Ideally it would be something like:
 
 ```javascript
 tns plugin add nativescript-baidu-push-notifications
@@ -20,21 +23,174 @@ tns plugin add nativescript-baidu-push-notifications
 
 ## Usage 
 
-Describe any usage specifics for your plugin. Give examples for Android, iOS, Angular if needed. See [nativescript-drop-down](https://www.npmjs.com/package/nativescript-drop-down) for example.
-	
-	```javascript
-    Usage code snippets here
-    ```)
+Your application ID is important here. Make sure that your Baidu API key & Application ID is correct.
 
-## API
+**Import**
 
-Describe your plugin methods and properties here. See [nativescript-feedback](https://github.com/EddyVerbruggen/nativescript-feedback) for example.
-    
-| Property | Default | Description |
-| --- | --- | --- |
-| some property | property default value | property description, default values, etc.. |
-| another property | property default value | property description, default values, etc.. |
-    
+TS/Angular:
+
+import { IosRegistrationOptions, AndroidOptions } from "nativescript-baidu-push-notifications";
+import * as pushPlugin from "nativescript-baidu-push-notifications";
+
+
+JavaScript:
+
+pushPlugin = require("nativescript-baidu-push-notifications");
+
+
+**Android**
+
+If you want to test in emulator then use Genymotion otherwise Baidu will send error message. Better to test with a real device.
+
+```javascript
+let opt: AndroidOptions = {
+    apiKey: 'My API Key'
+}
+
+pushPlugin.androidRegister(opt, function (Userid, channelId) {
+    console.log("Got register");
+    console.log("Userid: " + Userid)
+    console.log("channelId: " + channelId)
+}, function (err) {
+    console.log("not register");
+    console.dir(err)
+})
+pushPlugin.onMessageReceived(function (data) {
+    console.log("got message")
+    console.dir(data);
+});
+pushPlugin.onNotificationClicked(function (data) {
+    console.log("clicked message")
+    console.dir(data);
+})
+pushPlugin.onNotificationArrived(function (title, msg) {
+    console.log("onNotificationArrived")
+    console.log(title);
+    console.log(msg)
+})
+```
+
+**iOS**
+
+iOS will require a real device. In simulator baidu will send error message.
+
+First of all need to add this config in `App_Resource/iOS/Info.plist` file:
+
+Development Environment:
+
+```javascript
+<key>insBPushAPIKey</key>
+<string>Your-Baidu-Key</string>
+<key>isDevBPushEnvironment</key>
+<true/>
+```
+
+Production Environment:
+
+```javascript
+<key>insBPushAPIKey</key>
+<string>Your-Baidu-Key</string>
+<key>isDevBPushEnvironment</key>
+<false/>
+```
+
+```javascript
+
+let notificationSettings: IosRegistrationOptions = {
+    badge: true,
+    sound: true,
+    alert: true,
+    clearBadge: true,
+    interactiveSettings: {
+        actions: [{
+            identifier: 'READ_IDENTIFIER',
+            title: 'Read',
+            activationMode: "foreground",
+            destructive: false,
+            authenticationRequired: true
+        }, {
+            identifier: 'CANCEL_IDENTIFIER',
+            title: 'Cancel',
+            activationMode: "foreground",
+            destructive: true,
+            authenticationRequired: true
+        }],
+        categories: [{
+            identifier: 'READ_CATEGORY',
+            actionsForDefaultContext: ['READ_IDENTIFIER', 'CANCEL_IDENTIFIER'],
+            actionsForMinimalContext: ['READ_IDENTIFIER', 'CANCEL_IDENTIFIER']
+        }]
+    },
+
+    notificationCallbackIOS: function (message) {
+        console.log("notificationCallbackIOS : " + JSON.stringify(message));
+        alert(message.alert)
+    }
+};
+
+pushPlugin.iosRegister(notificationSettings,
+    //success callback
+    function (token) {
+        console.log("IOS PUSH NOTIF TOKEN DEVICE: " + token);
+
+        //Register the interactive settings
+        if (notificationSettings.interactiveSettings) {
+            pushPlugin.registerUserNotificationSettings(function () {
+
+                console.log("SUCCESSFULLY REGISTER PUSH NOTIFICATION: " + token);
+
+            }, function (err) {
+                console.log("ERROR REGISTER PUSH NOTIFICATION: " + JSON.stringify(err));
+            })
+        }
+    },
+    //error callback
+    function (error) {
+        console.log("REGISTER PUSH NOTIFICATION FAILED:");
+        console.dir(error);
+    }
+);
+
+pushPlugin.areNotificationsEnabled(function (areEnabled) {
+    console.log("Are Notifications enabled:" + JSON.stringify(areEnabled));
+});
+
+pushPlugin.registerBaiduNotificationSettingCallback(function (result) {
+    console.log("REGISTER BAIDU PUSH NOTIFICATION SUCCESS:");
+    let baiduInfo = result.copy();
+
+    let baiduChannelId = baiduInfo.valueForKey('channel_id');
+    let baiduUserId = baiduInfo.valueForKey('user_id');
+    console.log("resultBaidu:" + baiduInfo);
+    console.log("BAIDU Chanel Id:" + baiduChannelId);
+    console.log("BAIDU User Id:" + baiduUserId);
+
+}, function (error: any) {
+    console.log("REGISTER BAIDU PUSH NOTIFICATION FAILED:");
+    console.dir(error);
+});
+```
+Please check demo project for more details.
+
+
+**Tips:**
+
+* For Android push notification icon can add `ic_launcher` icon sets in `App_Resources/Android/src/main/res`.
+* For message notification can use `nativescript-local-notifications` plugin.
+
+## Credit
+
+Most of the work of this plugin has been followed/copied from this libaries:
+
+https://github.com/NativeScript/push-plugin
+
+https://www.npmjs.com/package/nativescript-baidu-push-ins
+
+https://www.npmjs.com/package/nativescript-baidu-push
+
+Special thanks to `Phuc Bui` and `Quang Le Hong` author of above 2 npm packages.
+
+
 ## License
 
 Apache License Version 2.0, January 2004

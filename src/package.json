@@ -1,7 +1,7 @@
 {
     "name": "nativescript-baidu-push-notifications",
     "version": "1.0.0",
-    "description": "Your awesome NativeScript plugin.",
+    "description": "Baidu push notifications plugin for NativeScript.",
     "main": "baidu-push-notifications",
     "typings": "index.d.ts",
     "nativescript": {
@@ -34,8 +34,8 @@
         "iOS"
     ],
     "author": {
-        "name": "Your Name",
-        "email": "youremail@yourdomain.com"
+        "name": "Jibon L. Costa",
+        "email": "jiboncosta57@gmail.com"
     },
     "bugs": {
         "url": "https://github.com/jibon57/nativescript-baidu-push-notifications/issues"

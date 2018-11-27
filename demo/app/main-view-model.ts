@@ -1,6 +1,6 @@
 import { Observable } from 'tns-core-modules/data/observable';
 import * as app from "tns-core-modules/application";
-import { IosRegistrationOptions } from "nativescript-baidu-push-notifications";
+import { IosRegistrationOptions, AndroidOptions } from "nativescript-baidu-push-notifications";
 import * as pushPlugin from "nativescript-baidu-push-notifications";
 
 export class HelloWorldModel extends Observable {
@@ -10,7 +10,41 @@ export class HelloWorldModel extends Observable {
 
         if (app.ios) {
             this.registerForiOS();
+        } else {
+            this.registerForAndroid();
         }
+    }
+
+    /**
+     * registerForAndroid
+     */
+    public registerForAndroid() {
+
+        let opt: AndroidOptions = {
+            apiKey: 'CMVgubVbH4vr6dqwvFZGv5l1'
+        }
+
+        pushPlugin.androidRegister(opt, function (Userid, channelId) {
+            console.log("Got register");
+            console.log("Userid: " + Userid)
+            console.log("channelId: " + channelId)
+        }, function (err) {
+            console.log("not register");
+            console.dir(err)
+        })
+        pushPlugin.onMessageReceived(function (data) {
+            console.log("got message")
+            console.dir(data);
+        });
+        pushPlugin.onNotificationClicked(function (data) {
+            console.log("clicked message")
+            console.dir(data);
+        })
+        pushPlugin.onNotificationArrived(function (title, msg) {
+            console.log("onNotificationArrived")
+            console.log(title);
+            console.log(msg)
+        })
     }
 
     /**
@@ -49,7 +83,7 @@ export class HelloWorldModel extends Observable {
             }
         };
 
-        pushPlugin.iOSregister(notificationSettings,
+        pushPlugin.iosRegister(notificationSettings,
             //success callback
             function (token) {
                 console.log("IOS PUSH NOTIF TOKEN DEVICE: " + token);
