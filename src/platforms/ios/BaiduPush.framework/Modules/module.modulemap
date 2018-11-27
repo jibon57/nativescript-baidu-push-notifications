@@ -1,0 +1,6 @@
+framework module BaiduPush {
+  umbrella header "BaiduPush.h"
+
+  export *
+  module * { export * }
+}
