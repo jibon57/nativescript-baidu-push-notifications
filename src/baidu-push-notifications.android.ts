@@ -1,4 +1,6 @@
 import * as app from 'tns-core-modules/application';
+import * as utils from "tns-core-modules/utils/utils";
+
 declare var com: any;
 
 (() => {
@@ -15,7 +17,17 @@ declare var com: any;
 })();
 
 export function androidRegister(options, successCallback, errorCallback) {
-    com.jibon.baidupush.PushPlugin.register(app.android.context, options.apiKey,
+
+    let icon = 0;
+
+    if (options.icon) {
+        let context = utils.ad.getApplicationContext();
+        let resources = context.getResources();
+        let packageName: string = context.getApplicationInfo().packageName;
+        icon = resources.getIdentifier(options.icon.substr(utils.RESOURCE_PREFIX.length), "drawable", packageName);
+    }
+
+    com.jibon.baidupush.PushPlugin.register(app.android.context, options.apiKey, icon,
         new com.jibon.baidupush.PushPluginListener(
             {
                 success: successCallback,

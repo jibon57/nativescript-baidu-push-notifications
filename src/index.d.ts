@@ -30,6 +30,7 @@ export interface NSError {
 
 export interface AndroidOptions {
   apiKey: string;
+  icon?: string;
 }
 
 // Android

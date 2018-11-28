@@ -46,7 +46,8 @@ If you want to test in emulator then use Genymotion otherwise Baidu will send er
 
 ```javascript
 let opt: AndroidOptions = {
-    apiKey: 'My API Key'
+    apiKey: 'My API Key',
+    icon: "res://simple_notification_icon" // optional App_Resouces/Android/drawable
 }
 
 pushPlugin.androidRegister(opt, function (Userid, channelId) {
@@ -103,7 +104,6 @@ Production Environment:
 JS code:
 
 ```javascript
-
 let notificationSettings: IosRegistrationOptions = {
     badge: true,
     sound: true,
@@ -217,6 +217,7 @@ export interface NSError {
 
 export interface AndroidOptions {
     apiKey: string;
+    icon?: string;
 }
 
 // Android
@@ -237,7 +238,7 @@ export declare function registerBaiduNotificationSettingCallback(success: (resul
 
 **Tips:**
 
-* For Android push notification icon can add `ic_launcher` icon sets in `App_Resources/Android/src/main/res`.
+* For Android push notification icon you will need to add icon sets in `App_Resources/Android/src/main/res`. Better to use 36X36 dimension for icon. Check the demo.
 * For message notification can use `nativescript-local-notifications` plugin.
 
 ## Credit

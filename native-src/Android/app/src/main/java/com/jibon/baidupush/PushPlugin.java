@@ -6,6 +6,7 @@ import android.util.Log;
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
 import com.baidu.android.pushservice.PushMessageReceiver;
+import com.baidu.android.pushservice.BasicPushNotificationBuilder;
 
 import java.util.List;
 
@@ -29,9 +30,15 @@ public class PushPlugin extends PushMessageReceiver {
      * @param apiKey
      * @param callbacks
      */
-    public static void register(Context appContext, String apiKey, PushPluginListener callbacks) {
+    public static void register(Context appContext, String apiKey, int icon, PushPluginListener callbacks) {
         registerCallbacks = callbacks;
         PushManager.startWork(appContext, PushConstants.LOGIN_TYPE_API_KEY, apiKey);
+
+        if(icon > 0){
+            BasicPushNotificationBuilder bBuilder = new BasicPushNotificationBuilder();
+            bBuilder.setStatusbarIcon(icon);
+            PushManager.setDefaultNotificationBuilder(appContext, bBuilder);
+        }
     }
 
     /**

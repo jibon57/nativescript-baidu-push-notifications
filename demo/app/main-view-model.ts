@@ -21,7 +21,8 @@ export class HelloWorldModel extends Observable {
     public registerForAndroid() {
 
         let opt: AndroidOptions = {
-            apiKey: 'My API Key'
+            apiKey: 'My API Key',
+            icon: "res://simple_notification_icon"
         }
 
         pushPlugin.androidRegister(opt, function (Userid, channelId) {
