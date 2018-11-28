@@ -36,7 +36,7 @@ export function androidRegister(options, successCallback, errorCallback) {
     );
 }
 
-export function androidUnregister(onSuccessCallback, onErrorCallback, options) {
+export function androidUnregister(onSuccessCallback, onErrorCallback) {
     com.jibon.baidupush.PushPlugin.unregister(app.android.context, new com.jibon.baidupush.PushPluginListener(
         {
             success: onSuccessCallback,

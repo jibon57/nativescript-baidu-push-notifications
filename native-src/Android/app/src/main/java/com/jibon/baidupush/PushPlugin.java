@@ -8,7 +8,9 @@ import com.baidu.android.pushservice.PushManager;
 import com.baidu.android.pushservice.PushMessageReceiver;
 import com.baidu.android.pushservice.BasicPushNotificationBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Push plugin extends the Baidu Listener Service and has to be registered in the AndroidManifest
@@ -87,7 +89,16 @@ public class PushPlugin extends PushMessageReceiver {
     public void onBind(Context context, int errorCode, String appid,
                        String userId, String channelId, String requestId) {
         if (registerCallbacks != null) {
-            registerCallbacks.success(userId, channelId);
+
+            String errorCodeString = String.valueOf(errorCode);
+            Map<String, String> data = new HashMap<String, String>();
+            data.put("userId", userId);
+            data.put("channelId", channelId);
+            data.put("appid", appid);
+            data.put("requestId", requestId);
+            data.put("errorCode", errorCodeString);
+
+            registerCallbacks.success(data);
         }
         PushPlugin.isActive = true;
     }
@@ -201,9 +212,15 @@ public class PushPlugin extends PushMessageReceiver {
      */
     @Override
     public void onUnbind(Context context, int errorCode, String requestId) {
-        String responseString = errorCode + "-" + requestId;
+
         if (unregisterCallbacks != null) {
-            unregisterCallbacks.success(responseString);
+
+            String errorCodeString = String.valueOf(errorCode);
+            Map<String, String> data = new HashMap<String, String>();
+            data.put("errorCode", errorCodeString);
+            data.put("requestId", requestId);
+
+            unregisterCallbacks.success(data);
         }
         PushPlugin.isActive = false;
     }

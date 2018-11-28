@@ -35,7 +35,7 @@ export interface AndroidOptions {
 
 // Android
 export declare function androidRegister(options: AndroidOptions, successCallback: any, errorCallback: any): void;
-export declare function androidUnregister(onSuccessCallback: any, onErrorCallback: any, options: any): void;
+export declare function androidUnregister(onSuccessCallback: any, onErrorCallback: any): void;
 export declare function onMessageReceived(callback: any): void;
 export declare function onNotificationArrived(callback: any): void;
 export declare function onNotificationClicked(callback: any): void;

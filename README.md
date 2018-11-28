@@ -50,30 +50,47 @@ let opt: AndroidOptions = {
     icon: "res://simple_notification_icon" // optional App_Resouces/Android/drawable
 }
 
-pushPlugin.androidRegister(opt, function (Userid, channelId) {
+pushPlugin.androidRegister(opt, function (data) {
+
     console.log("Got register");
-    console.log("Userid: " + Userid)
-    console.log("channelId: " + channelId)
+    console.log("userId: " + data.get("userId"));
+    console.log("channelId: " + data.get("channelId"));
+    console.log("appid: " + data.get("appid"));
+    console.log("requestId: " + data.get("requestId"));
+    console.log("errorCode: " + data.get("errorCode"));
+
 }, function (err) {
     console.log("not register");
     console.dir(err)
-})
+});
+
 pushPlugin.onMessageReceived(function (msg, customString) {
     console.log("got message")
     console.log(msg);
     console.log(customString);
 });
+
 pushPlugin.onNotificationClicked(function (title, msg, customString) {
     console.log("clicked message")
     console.log(title);
     console.log(msg);
     console.log(customString)
-})
+});
+
 pushPlugin.onNotificationArrived(function (title, msg, customString) {
     console.log("onNotificationArrived")
     console.log(title);
     console.log(msg);
     console.log(customString)
+});
+
+pushPlugin.androidUnregister(function(data){
+    console.log("Got unregister");
+    console.log("errorCode: " + data.get("errorCode"));
+    console.log("requestId: " + data.get("requestId"));
+}, function(err){
+    console.log("not unregister");
+    console.dir(err);
 })
 ```
 
@@ -177,6 +194,10 @@ pushPlugin.registerBaiduNotificationSettingCallback(function (result) {
     console.log("REGISTER BAIDU PUSH NOTIFICATION FAILED:");
     console.dir(error);
 });
+
+pushPlugin.iosUnregister((context)=>{
+    console.log("done unregister");
+})
 ```
 Please check demo project for more details.
 
@@ -222,7 +243,7 @@ export interface AndroidOptions {
 
 // Android
 export declare function androidRegister(options: AndroidOptions, successCallback: any, errorCallback: any): void;
-export declare function androidUnregister(onSuccessCallback: any, onErrorCallback: any, options: any): void;
+export declare function androidUnregister(onSuccessCallback: any, onErrorCallback: any): void;
 export declare function onMessageReceived(callback: any): void;
 export declare function onNotificationArrived(callback: any): void;
 export declare function onNotificationClicked(callback: any): void;

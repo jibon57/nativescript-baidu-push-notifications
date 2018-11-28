@@ -2,6 +2,7 @@ import { Observable } from 'tns-core-modules/data/observable';
 import * as app from "tns-core-modules/application";
 import { IosRegistrationOptions, AndroidOptions } from "nativescript-baidu-push-notifications";
 import * as pushPlugin from "nativescript-baidu-push-notifications";
+import * as utils from "tns-core-modules/utils/utils";
 
 export class HelloWorldModel extends Observable {
 
@@ -25,14 +26,19 @@ export class HelloWorldModel extends Observable {
             icon: "res://simple_notification_icon"
         }
 
-        pushPlugin.androidRegister(opt, function (Userid, channelId) {
+        pushPlugin.androidRegister(opt, function (data) {
+
             console.log("Got register");
-            console.log("Userid: " + Userid)
-            console.log("channelId: " + channelId)
+            console.log("userId: " + data.get("userId"));
+            console.log("channelId: " + data.get("channelId"));
+            console.log("appid: " + data.get("appid"));
+            console.log("requestId: " + data.get("requestId"));
+            console.log("errorCode: " + data.get("errorCode"));
+
         }, function (err) {
             console.log("not register");
             console.dir(err)
-        })
+        });
         pushPlugin.onMessageReceived(function (msg, customString) {
             console.log("got message")
             console.log(msg);
