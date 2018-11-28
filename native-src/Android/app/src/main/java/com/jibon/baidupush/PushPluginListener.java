@@ -11,6 +11,7 @@ public interface PushPluginListener {
      */
     void success(String userId, String channelId); // method overload to mimic optional argument
     void success(String message); // method overload to mimic optional argument
+    void success(String userId, String channelId, String CustomString); // get custom string
 
     /**
      * Defines a error callback method, which is used to pass success function reference

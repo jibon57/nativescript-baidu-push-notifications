@@ -35,7 +35,7 @@ gradle.buildFinished {
         copy {
             from path
             into "$projectDir/build/outputs/aar/"
-            rename "app-debug.aar", "baidupush.aar"
+            rename "app-release.aar", "baidupush.aar"
         }
 
         println "\nPlugin copied to build/outputs/aar folder."

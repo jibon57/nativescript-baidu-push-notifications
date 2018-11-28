@@ -96,7 +96,7 @@ public class PushPlugin extends PushMessageReceiver {
     public void onMessage(Context context, String message, String customContentString) {
 
         if (onMessageReceivedCallback != null) {
-            onMessageReceivedCallback.success(message);
+            onMessageReceivedCallback.success(message, customContentString);
         }
         String messageString = "got onMessage=\"" + message
                 + "\" customContentString=" + customContentString;
@@ -121,7 +121,7 @@ public class PushPlugin extends PushMessageReceiver {
         Log.d(TAG, notifyString);
 
         if(onNotificationArrivedCallback != null){
-            onNotificationArrivedCallback.success(title, description);
+            onNotificationArrivedCallback.success(title, description, customContentString);
         }
     }
 
@@ -141,7 +141,7 @@ public class PushPlugin extends PushMessageReceiver {
         Log.d(TAG, notifyString);
 
         if(onNotificationClickedCallback != null){
-            onNotificationClickedCallback.success(title, description);
+            onNotificationClickedCallback.success(title, description, customContentString);
         }
     }
 

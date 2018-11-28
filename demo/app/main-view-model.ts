@@ -32,18 +32,22 @@ export class HelloWorldModel extends Observable {
             console.log("not register");
             console.dir(err)
         })
-        pushPlugin.onMessageReceived(function (data) {
+        pushPlugin.onMessageReceived(function (msg, customString) {
             console.log("got message")
-            console.dir(data);
+            console.log(msg);
+            console.log(customString);
         });
-        pushPlugin.onNotificationClicked(function (data) {
+        pushPlugin.onNotificationClicked(function (title, msg, customString) {
             console.log("clicked message")
-            console.dir(data);
+            console.log(title);
+            console.log(msg);
+            console.log(customString)
         })
-        pushPlugin.onNotificationArrived(function (title, msg) {
+        pushPlugin.onNotificationArrived(function (title, msg, customString) {
             console.log("onNotificationArrived")
             console.log(title);
-            console.log(msg)
+            console.log(msg);
+            console.log(customString)
         })
     }
 

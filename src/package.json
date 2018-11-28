@@ -1,6 +1,6 @@
 {
     "name": "nativescript-baidu-push-notifications",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Baidu push notifications plugin for NativeScript.",
     "main": "baidu-push-notifications",
     "typings": "index.d.ts",
