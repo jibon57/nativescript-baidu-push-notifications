@@ -16,8 +16,6 @@ const NSString * setBadgeNumberEventName = @"setApplicationIconBadgeNumber";
 const NSString * didRegisterUserNotificationSettingsEventName = @"didRegisterUserNotificationSettings";
 const NSString * failToRegisterUserNotificationSettingsEventName = @"failToRegisterUserNotificationSettings";
 
-const NSString * didRegisterEventBaiduName = @"didRegisterForBaiduRemoteNotificationsWithChanelId";
-const NSString * failToRegisterEventBaiduName = @"didFailtRegisterForBaiduRemoteNotificationsWithError";
 
 static char launchNotificationKey;
 
@@ -67,6 +65,7 @@ BOOL isDevBPushEnvironment = TRUE;
 {
     [[UIApplication sharedApplication] unregisterForRemoteNotifications];
     [self success:didUnregisterEventName WithMessage:@"Success"];
+    
 }
 
 -(void)register:(NSMutableDictionary *)options
@@ -124,8 +123,6 @@ BOOL isDevBPushEnvironment = TRUE;
 - (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     NSLog(@"Push didRegisterForRemoteNotificationsWithDeviceToken");
-    // we will send it to baidu
-    [self registerBaiduResult:deviceToken];
     
     NSMutableDictionary *results = [NSMutableDictionary dictionary];
     NSString *token = [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""]
@@ -179,7 +176,28 @@ BOOL isDevBPushEnvironment = TRUE;
     [results setValue:dev.model forKey:@"deviceModel"];
     [results setValue:dev.systemVersion forKey:@"deviceSystemVersion"];
     
-    [self success:didRegisterEventName WithMessage:[NSString stringWithFormat:@"%@", token]];
+    //[self success:didRegisterEventName WithMessage:[NSString stringWithFormat:@"%@", deviceToken]];
+    
+    // we will send it to baidu
+    
+    [BPush registerDeviceToken:deviceToken];
+    [BPush bindChannelWithCompleteHandler:^(id result, NSError *error) {
+        NSLog(@"bindChannelWithCompleteHandler:%@",result);
+        
+        if (error) {
+            [self fail:didFailToRegisterEventName WithMessage:@"No baidu chanel id" withError:error];
+            return ;
+        }
+        if (result) {
+            if ([result[@"error_code"]intValue]!=0) {
+                return;
+            }
+            
+            [self success:didRegisterEventName WithDictionary:result];
+            
+        }
+    }];
+    
 #endif
 }
 
@@ -405,30 +423,6 @@ BOOL isDevBPushEnvironment = TRUE;
 - (void)dealloc
 {
     self.launchNotification	= nil;
-}
-
--(void)registerBaiduResult:(NSData *)deviceToken {
-    
-    [BPush registerDeviceToken:deviceToken];
-    [BPush bindChannelWithCompleteHandler:^(id result, NSError *error) {
-        NSLog(@"INSBaiduPush bindChannelWithCompleteHandler:%@",result);
-        // 需要在绑定成功后进行 settag listtag deletetag unbind 操作否则会失败
-        
-        // 网络错误
-        if (error) {
-            [self fail:failToRegisterEventBaiduName WithMessage:@"No baidu chanel id" withError:error];
-            return ;
-        }
-        if (result) {
-            // 确认绑定成功
-            if ([result[@"error_code"]intValue]!=0) {
-                return;
-            }
-
-            [self success:didRegisterEventBaiduName WithDictionary:result];
-            
-        }
-    }];
 }
 
 @end

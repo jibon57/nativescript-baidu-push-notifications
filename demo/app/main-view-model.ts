@@ -2,7 +2,6 @@ import { Observable } from 'tns-core-modules/data/observable';
 import * as app from "tns-core-modules/application";
 import { IosRegistrationOptions, AndroidOptions } from "nativescript-baidu-push-notifications";
 import * as pushPlugin from "nativescript-baidu-push-notifications";
-import * as utils from "tns-core-modules/utils/utils";
 
 export class HelloWorldModel extends Observable {
 
@@ -24,7 +23,7 @@ export class HelloWorldModel extends Observable {
         let opt: AndroidOptions = {
             apiKey: 'My API Key',
             icon: "res://simple_notification_icon"
-        }
+        };
 
         pushPlugin.androidRegister(opt, function (data) {
 
@@ -37,25 +36,25 @@ export class HelloWorldModel extends Observable {
 
         }, function (err) {
             console.log("not register");
-            console.dir(err)
+            console.dir(err);
         });
         pushPlugin.onMessageReceived(function (msg, customString) {
-            console.log("got message")
+            console.log("got message");
             console.log(msg);
             console.log(customString);
         });
         pushPlugin.onNotificationClicked(function (title, msg, customString) {
-            console.log("clicked message")
+            console.log("clicked message");
             console.log(title);
             console.log(msg);
-            console.log(customString)
-        })
+            console.log(customString);
+        });
         pushPlugin.onNotificationArrived(function (title, msg, customString) {
-            console.log("onNotificationArrived")
+            console.log("onNotificationArrived");
             console.log(title);
             console.log(msg);
-            console.log(customString)
-        })
+            console.log(customString);
+        });
     }
 
     /**
@@ -90,27 +89,26 @@ export class HelloWorldModel extends Observable {
 
             notificationCallbackIOS: function (message) {
                 console.log("notificationCallbackIOS : " + JSON.stringify(message));
-                alert(message.alert)
+                alert(message.alert);
             }
         };
 
         pushPlugin.iosRegister(notificationSettings,
-            //success callback
-            function (token) {
-                console.log("IOS PUSH NOTIF TOKEN DEVICE: " + token);
-
-                //Register the interactive settings
+            // success callback
+            function (result: any) {
+                // Register the interactive settings
                 if (notificationSettings.interactiveSettings) {
-                    pushPlugin.registerUserNotificationSettings(function () {
 
-                        console.log("SUCCESSFULLY REGISTER PUSH NOTIFICATION: " + token);
+                    pushPlugin.registerUserNotificationSettings(function () {
+                        console.log("SUCCESSFULLY REGISTER BAIDU PUSH NOTIFICATION");
+                        console.dir(result);
 
                     }, function (err) {
                         console.log("ERROR REGISTER PUSH NOTIFICATION: " + JSON.stringify(err));
-                    })
+                    });
                 }
             },
-            //error callback
+            // error callback
             function (error) {
                 console.log("REGISTER PUSH NOTIFICATION FAILED:");
                 console.dir(error);
@@ -120,20 +118,24 @@ export class HelloWorldModel extends Observable {
         pushPlugin.areNotificationsEnabled(function (areEnabled) {
             console.log("Are Notifications enabled:" + JSON.stringify(areEnabled));
         });
+    }
 
-        pushPlugin.registerBaiduNotificationSettingCallback(function (result) {
-            console.log("REGISTER BAIDU PUSH NOTIFICATION SUCCESS:");
-            let baiduInfo = result.copy();
-
-            let baiduChannelId = baiduInfo.valueForKey('channel_id');
-            let baiduUserId = baiduInfo.valueForKey('user_id');
-            console.log("resultBaidu:" + baiduInfo);
-            console.log("BAIDU Chanel Id:" + baiduChannelId);
-            console.log("BAIDU User Id:" + baiduUserId);
-
-        }, function (error: any) {
-            console.log("REGISTER BAIDU PUSH NOTIFICATION FAILED:");
-            console.dir(error);
-        });
+    /**
+     * unregister
+     */
+    public unregister() {
+        if (app.ios) {
+            pushPlugin.iosUnregister((success) => {
+                console.log("Unregistered: " + success);
+            }, (err) => {
+                console.log("didn't unregister.");
+            });
+        } else {
+            pushPlugin.androidUnregister((success) => {
+                console.log("done unregister");
+            }, (err) => {
+                console.log("didn't unregister.");
+            });
+        }
     }
 }

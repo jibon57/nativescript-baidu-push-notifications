@@ -1,7 +1,7 @@
 import * as app from 'tns-core-modules/application';
 const iosApp = app.ios;
 
-declare const BaiduPush, BaiduPushManager;
+declare const BaiduPush, BaiduPushManager, BPush;
 
 export declare interface IosInteractiveNotificationAction {
     identifier: string;
@@ -26,7 +26,7 @@ export declare interface IosRegistrationOptions {
     interactiveSettings: {
         actions: IosInteractiveNotificationAction[],
         categories: IosInteractiveNotificationCategory[]
-    }
+    };
     notificationCallbackIOS: (message: any) => void;
 }
 
@@ -106,14 +106,24 @@ let _removeObserver = function (observer: () => void, eventName: string) {
     iosApp.removeNotificationObserver(observer, eventName);
 };
 
-export function iosRegister(settings: IosRegistrationOptions, success: (token: String) => void, error: (NSError: any) => void) {
+export function iosRegister(settings: IosRegistrationOptions, success: (token: any) => void, error: (NSError: any) => void) {
+
     _init(settings);
+
     if (!pushSettings.didRegisterObserver) { // make sure that the events are not attached more than once
         pushSettings.didRegisterObserver = _addObserver("didRegisterForRemoteNotificationsWithDeviceToken", (result: any) => {
             _removeObserver(pushSettings.didRegisterObserver, "didRegisterForRemoteNotificationsWithDeviceToken");
             pushSettings.didRegisterObserver = undefined;
-            const token = result.userInfo.objectForKey('message');
-            success(token);
+
+            let baiduInfo = result.userInfo;
+
+            let baiduObj = {
+                channel_id: baiduInfo.valueForKey('channel_id'),
+                user_id: baiduInfo.valueForKey('user_id'),
+                request_id: baiduInfo.valueForKey('request_id'),
+                app_id: baiduInfo.valueForKey('app_id'),
+            };
+            success(baiduObj);
         });
     }
 
@@ -169,13 +179,21 @@ export function registerUserNotificationSettings(success: () => void, error: (er
     }
 }
 
-export function iosUnregister(done: (context: any) => void) {
+export function iosUnregister(success: (result: any) => void, error: (error: NSError) => void) {
+
     if (!pushSettings.didUnregisterObserver) {
         pushSettings.didUnregisterObserver = _addObserver("didUnregister", (context: any) => {
             _removeObserver(pushSettings.didUnregisterObserver, "didUnregister");
 
             pushSettings.didUnregisterObserver = undefined;
-            done(context);
+
+            BPush.unbindChannelWithCompleteHandler(function (result, error) {
+                if (result) {
+                    success(result.valueForKey('request_id'));
+                } else {
+                    error(error);
+                }
+            });
         });
     }
 
@@ -195,26 +213,4 @@ export function areNotificationsEnabled(done: (areEnabled: Boolean) => void) {
     }
 
     pushHandler.areNotificationsEnabled();
-}
-
-export function registerBaiduNotificationSettingCallback(success: (result: any) => void, error: (error: NSError) => void) {
-    if (!pushSettings.didRegisterForBaiduRemoteNotificationsObserver) {
-        pushSettings.didRegisterForBaiduRemoteNotificationsObserver = _addObserver("didRegisterForBaiduRemoteNotificationsWithChanelId", function (result) {
-
-            _removeObserver(pushSettings.didRegisterForBaiduRemoteNotificationsObserver, "didRegisterForBaiduRemoteNotificationsWithChanelId");
-            pushSettings.didRegisterForBaiduRemoteNotificationsObserver = undefined;
-            const resultBaidu = result.userInfo;
-            success(resultBaidu);
-        });
-    }
-
-    if (!pushSettings.didFailtRegisterForBaiduRemoteNotificationsObserver) {
-        pushSettings.didFailtRegisterForBaiduRemoteNotificationsObserver = _addObserver("didFailtRegisterForBaiduRemoteNotificationsWithError", (e: NSError) => {
-            _removeObserver(pushSettings.didFailtRegisterForBaiduRemoteNotificationsObserver, "didFailtRegisterForBaiduRemoteNotificationsWithError");
-
-            pushSettings.didFailtRegisterForBaiduRemoteNotificationsObserver = undefined;
-            error(e);
-        });
-    }
-
 }

@@ -43,6 +43,5 @@ export declare function onNotificationClicked(callback: any): void;
 // iOS
 export declare function iosRegister(settings: IosRegistrationOptions, success: (token: String) => void, error: (NSError: any) => void): void;
 export declare function registerUserNotificationSettings(success: () => void, error: (error: NSError) => void): void;
-export declare function iosUnregister(done: (context: any) => void): void;
+export declare function iosUnregister(success: (result: any) => void, error: (error: NSError) => void): void;
 export declare function areNotificationsEnabled(done: (areEnabled: Boolean) => void): void;
-export declare function registerBaiduNotificationSettingCallback(success: (result: any) => void, error: (error: NSError) => void): void;

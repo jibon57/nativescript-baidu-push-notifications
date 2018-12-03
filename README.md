@@ -83,15 +83,6 @@ pushPlugin.onNotificationArrived(function (title, msg, customString) {
     console.log(msg);
     console.log(customString)
 });
-
-pushPlugin.androidUnregister(function(data){
-    console.log("Got unregister");
-    console.log("errorCode: " + data.get("errorCode"));
-    console.log("requestId: " + data.get("requestId"));
-}, function(err){
-    console.log("not unregister");
-    console.dir(err);
-})
 ```
 
 **iOS**
@@ -121,6 +112,8 @@ Production Environment:
 JS code:
 
 ```javascript
+// check details https://github.com/NativeScript/push-plugin#using-the-plugin-in-ios
+
 let notificationSettings: IosRegistrationOptions = {
     badge: true,
     sound: true,
@@ -155,14 +148,13 @@ let notificationSettings: IosRegistrationOptions = {
 
 pushPlugin.iosRegister(notificationSettings,
     //success callback
-    function (token) {
-        console.log("IOS PUSH NOTIF TOKEN DEVICE: " + token);
-
+    function (result: any) {
         //Register the interactive settings
         if (notificationSettings.interactiveSettings) {
-            pushPlugin.registerUserNotificationSettings(function () {
 
-                console.log("SUCCESSFULLY REGISTER PUSH NOTIFICATION: " + token);
+            pushPlugin.registerUserNotificationSettings(function () {
+                console.log("SUCCESSFULLY REGISTER BAIDU PUSH NOTIFICATION")
+                console.dir(result);
 
             }, function (err) {
                 console.log("ERROR REGISTER PUSH NOTIFICATION: " + JSON.stringify(err));
@@ -179,25 +171,6 @@ pushPlugin.iosRegister(notificationSettings,
 pushPlugin.areNotificationsEnabled(function (areEnabled) {
     console.log("Are Notifications enabled:" + JSON.stringify(areEnabled));
 });
-
-pushPlugin.registerBaiduNotificationSettingCallback(function (result) {
-    console.log("REGISTER BAIDU PUSH NOTIFICATION SUCCESS:");
-    let baiduInfo = result.copy();
-
-    let baiduChannelId = baiduInfo.valueForKey('channel_id');
-    let baiduUserId = baiduInfo.valueForKey('user_id');
-    console.log("resultBaidu:" + baiduInfo);
-    console.log("BAIDU Chanel Id:" + baiduChannelId);
-    console.log("BAIDU User Id:" + baiduUserId);
-
-}, function (error: any) {
-    console.log("REGISTER BAIDU PUSH NOTIFICATION FAILED:");
-    console.dir(error);
-});
-
-pushPlugin.iosUnregister((context)=>{
-    console.log("done unregister");
-})
 ```
 Please check demo project for more details.
 
@@ -205,7 +178,6 @@ Please check demo project for more details.
 ## All Methods/Options
 
 ```javascript
-
 export interface IosInteractiveNotificationAction {
     identifier: string;
     title: string;
@@ -249,12 +221,10 @@ export declare function onNotificationArrived(callback: any): void;
 export declare function onNotificationClicked(callback: any): void;
 
 // iOS
-export declare function iosRegister(settings: IosRegistrationOptions, success: (token: String) => void, error: (NSError: any) => void): void;
+export declare function iosRegister(settings: IosRegistrationOptions, success: (token: any) => void, error: (NSError: any) => void): void;
 export declare function registerUserNotificationSettings(success: () => void, error: (error: NSError) => void): void;
-export declare function iosUnregister(done: (context: any) => void): void;
+export declare function iosUnregister(success: (result: any) => void, error: (error: NSError) => void): void;
 export declare function areNotificationsEnabled(done: (areEnabled: Boolean) => void): void;
-export declare function registerBaiduNotificationSettingCallback(success: (result: any) => void, error: (error: NSError) => void): void;
-
 ```
 
 **Tips:**
