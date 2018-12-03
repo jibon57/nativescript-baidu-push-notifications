@@ -8,7 +8,8 @@ matrix:
     - stage: "WebPack, Build and Test"
       os: osx
       env:
-        - WebPack="iOS"
+        - BuildiOS="12.0"
+        - Xcode="10.0"
       osx_image: xcode10.0
       language: node_js 
       node_js: "8"
@@ -26,28 +27,32 @@ matrix:
         - BuildAndroid="28"
       os: linux
       jdk: oraclejdk8
-      before_install: nvm install stable
+      before_install: nvm install 8
       script:
         - cd src && npm i && npm run tsc && cd ../demo && tns build android
     - os: osx
       env: 
-        - BuildiOS="12"
-        - Xcode="10.0"
+        - TestVersion="latest"
       osx_image: xcode10.0
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
       script: 
         - cd src && npm i && npm run tsc && cd ../demo && tns build ios
-   
 android:
   components:
     - tools
     - platform-tools
-    - build-tools-28.0.3
+    - build-tools-28.0.2
     - android-28
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-21
+  licenses:
+    - '.+'
+
+before_install:
+    - sudo pip install --upgrade pip
+    - sudo pip install six
 
 install:
     - echo no | npm install -g nativescript
